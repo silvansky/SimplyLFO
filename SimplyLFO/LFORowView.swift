@@ -20,8 +20,8 @@ struct LFORowView: View {
                     Text("Rate")
                         .font(.caption)
                         .frame(width: 35, alignment: .leading)
-                    Slider(value: $lfo.rate, in: 0.1...20.0, step: 0.1)
-                    Text("\(lfo.rate, specifier: "%.1f")")
+                    Slider(value: $lfo.rate, in: 0.01...20.0)
+                    Text("\(lfo.rate, specifier: "%.2f")")
                         .font(.caption)
                         .frame(width: 30)
                 }
