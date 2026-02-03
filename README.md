@@ -13,6 +13,8 @@ macOS app that generates LFO signals and sends them as MIDI CC messages.
 - Real-time output visualization
 - Any MIDI destination
 
+![Screenshot](screenshot.png)
+
 ## Requirements
 
 - macOS 13+
