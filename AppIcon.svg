@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.3"/>
+      <stop offset="50%" style="stop-color:#0099ff;stop-opacity:0.5"/>
+      <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0.3"/>
+    </linearGradient>
+    <clipPath id="rounded">
+      <rect x="16" y="16" width="480" height="480" rx="90" ry="90"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect x="16" y="16" width="480" height="480" rx="90" ry="90" fill="url(#bg)"/>
+
+  <!-- Clipped content -->
+  <g clip-path="url(#rounded)">
+    <!-- Sine wave background -->
+    <path d="M 16 256
+             Q 76 156, 136 256
+             Q 196 356, 256 256
+             Q 316 156, 376 256
+             Q 436 356, 496 256"
+          fill="none"
+          stroke="url(#wave)"
+          stroke-width="60"
+          stroke-linecap="round"/>
+
+    <!-- Second wave layer for depth -->
+    <path d="M 16 256
+             Q 76 156, 136 256
+             Q 196 356, 256 256
+             Q 316 156, 376 256
+             Q 436 356, 496 256"
+          fill="none"
+          stroke="#00d4ff"
+          stroke-width="4"
+          stroke-linecap="round"
+          opacity="0.6"/>
+  </g>
+
+  <!-- LFO Text -->
+  <text x="256" y="290"
+        font-family="SF Pro Display, -apple-system, Helvetica Neue, Arial, sans-serif"
+        font-size="160"
+        font-weight="700"
+        fill="#ffffff"
+        text-anchor="middle"
+        letter-spacing="-5">LFO</text>
+</svg>
