@@ -101,6 +101,12 @@ class LFOViewModel: ObservableObject {
         case .triangle: return "Tri"
         case .square: return "Sqr"
         case .sawtooth: return "Saw"
+        case .reverseSawtooth: return "rSaw"
+        case .sampleAndHold: return "S&H"
+        case .noise: return "Noise"
+        case .exponential: return "Exp"
+        case .stepped: return "Step"
+        case .smoothRandom: return "Rnd"
         }
     }
 }
