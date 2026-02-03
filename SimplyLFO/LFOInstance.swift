@@ -8,39 +8,30 @@ class LFOInstance: ObservableObject, Identifiable {
     @Published var rate: Double = 2.0
     @Published var depth: Double = 0.5
     @Published var waveform: LFO.Waveform = .sine
-    @Published var ccValue: Double = 0.0
     @Published var isRunning = false
     @Published var selectedCC: UInt8 = 74
 
-    private var timer: Timer?
-    private weak var midiManager: MIDIManager?
+    var ccValue: Double = 0.0
+    weak var midiManager: MIDIManager?
 
     init(midiManager: MIDIManager) {
         self.midiManager = midiManager
     }
 
     func start() {
-        stop()
         lfo.rate = rate
         lfo.depth = depth
         lfo.waveform = waveform
         lfo.phase = 0
-
-        let t = Timer(timeInterval: 0.02, repeats: true) { [weak self] _ in
-            self?.update()
-        }
-        RunLoop.main.add(t, forMode: .common)
-        timer = t
         isRunning = true
     }
 
     func stop() {
-        timer?.invalidate()
-        timer = nil
         isRunning = false
     }
 
-    private func update() {
+    func update() {
+        guard isRunning else { return }
         lfo.rate = rate
         lfo.depth = depth
         lfo.waveform = waveform

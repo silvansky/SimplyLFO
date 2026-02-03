@@ -46,13 +46,15 @@ struct LFORowView: View {
             .frame(width: 130)
 
             // Indicator
-            ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.gray.opacity(0.2))
-                    .frame(width: 60, height: 20)
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(lfo.isRunning ? Color.green : Color.blue)
-                    .frame(width: CGFloat((lfo.ccValue + 1) * 30), height: 20)
+            TimelineView(.animation(minimumInterval: 0.03, paused: !lfo.isRunning)) { _ in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(width: 60, height: 20)
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(lfo.isRunning ? Color.green : Color.blue)
+                        .frame(width: CGFloat((lfo.ccValue + 1) * 30), height: 20)
+                }
             }
 
             // Start/Stop

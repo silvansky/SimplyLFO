@@ -9,6 +9,7 @@ struct CCController: Identifiable {
 class LFOViewModel: ObservableObject {
     @Published var lfos: [LFOInstance] = []
     @Published var midiManager = MIDIManager()
+    private var timer: Timer?
 
     static let ccControllers: [CCController] = [
         CCController(id: 1, name: "Mod Wheel"),
@@ -83,6 +84,21 @@ class LFOViewModel: ObservableObject {
             midiManager.connect(to: 0)
         }
         addLFO()
+        startTimer()
+    }
+
+    private func startTimer() {
+        let t = Timer(timeInterval: 0.02, repeats: true) { [weak self] _ in
+            self?.updateAllLFOs()
+        }
+        RunLoop.main.add(t, forMode: .common)
+        timer = t
+    }
+
+    private func updateAllLFOs() {
+        for lfo in lfos {
+            lfo.update()
+        }
     }
 
     func addLFO() {
