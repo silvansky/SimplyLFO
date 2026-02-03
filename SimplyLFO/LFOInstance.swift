@@ -26,9 +26,11 @@ class LFOInstance: ObservableObject, Identifiable {
         lfo.waveform = waveform
         lfo.phase = 0
 
-        timer = Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true) { [weak self] _ in
+        let t = Timer(timeInterval: 0.02, repeats: true) { [weak self] _ in
             self?.update()
         }
+        RunLoop.main.add(t, forMode: .common)
+        timer = t
         isRunning = true
     }
 
