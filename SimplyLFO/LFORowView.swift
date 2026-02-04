@@ -1,4 +1,79 @@
 import SwiftUI
+import AppKit
+
+class WaveformNSView: NSView {
+    weak var lfoInstance: LFOInstance?
+    private var displayLink: CVDisplayLink?
+
+    override init(frame: NSRect) {
+        super.init(frame: frame)
+        wantsLayer = true
+        layer?.backgroundColor = NSColor.black.cgColor
+        setupDisplayLink()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) not implemented")
+    }
+
+    private func setupDisplayLink() {
+        CVDisplayLinkCreateWithActiveCGDisplays(&displayLink)
+        guard let displayLink = displayLink else { return }
+
+        CVDisplayLinkSetOutputCallback(displayLink, { _, _, _, _, _, userInfo -> CVReturn in
+            let view = Unmanaged<WaveformNSView>.fromOpaque(userInfo!).takeUnretainedValue()
+            DispatchQueue.main.async { view.needsDisplay = true }
+            return kCVReturnSuccess
+        }, Unmanaged.passUnretained(self).toOpaque())
+
+        CVDisplayLinkStart(displayLink)
+    }
+
+    deinit {
+        if let displayLink = displayLink {
+            CVDisplayLinkStop(displayLink)
+        }
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        guard let context = NSGraphicsContext.current?.cgContext,
+              let lfo = lfoInstance else { return }
+
+        let history = lfo.valueHistory
+        guard history.count > 1 else { return }
+
+        context.setStrokeColor(NSColor.green.cgColor)
+        context.setLineWidth(1.5)
+
+        let stepX = bounds.width / CGFloat(lfo.historySize - 1)
+
+        context.beginPath()
+        for (i, value) in history.enumerated() {
+            let x = CGFloat(lfo.historySize - history.count + i) * stepX
+            let y = CGFloat(value) / 127.0 * bounds.height
+            if i == 0 {
+                context.move(to: CGPoint(x: x, y: y))
+            } else {
+                context.addLine(to: CGPoint(x: x, y: y))
+            }
+        }
+        context.strokePath()
+    }
+}
+
+struct WaveformView: NSViewRepresentable {
+    let lfoInstance: LFOInstance
+
+    func makeNSView(context: Context) -> WaveformNSView {
+        let view = WaveformNSView()
+        view.lfoInstance = lfoInstance
+        return view
+    }
+
+    func updateNSView(_ nsView: WaveformNSView, context: Context) {
+        nsView.lfoInstance = lfoInstance
+    }
+}
 
 struct LFORowView: View {
     @ObservedObject var lfo: LFOInstance
@@ -54,17 +129,10 @@ struct LFORowView: View {
             }
             .frame(width: 130)
 
-            // Indicator
-            TimelineView(.animation(minimumInterval: 0.03, paused: !lfo.isRunning)) { _ in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(width: 60, height: 20)
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(lfo.isRunning ? Color.green : Color.blue)
-                        .frame(width: CGFloat(Double(lfo.midiValue) / 127.0 * 60), height: 20)
-                }
-            }
+            // Oscilloscope indicator
+            WaveformView(lfoInstance: lfo)
+                .frame(width: 80)
+                .cornerRadius(4)
 
             // Start/Stop
             Button(lfo.isRunning ? "Stop" : "Start") {

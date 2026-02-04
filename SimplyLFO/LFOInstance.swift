@@ -14,6 +14,8 @@ class LFOInstance: ObservableObject, Identifiable {
 
     var ccValue: Double = 0.0
     var midiValue: UInt8 = 64
+    var valueHistory: [UInt8] = []
+    let historySize = 60
     weak var midiManager: MIDIManager?
 
     init(midiManager: MIDIManager) {
@@ -44,6 +46,12 @@ class LFOInstance: ObservableObject, Identifiable {
         let center = offset * 127.0
         let swing = value * 63.5
         midiValue = UInt8(max(0, min(127, center + swing)))
+
+        valueHistory.append(midiValue)
+        if valueHistory.count > historySize {
+            valueHistory.removeFirst()
+        }
+
         midiManager?.sendCC(midiValue, controller: selectedCC)
     }
 }
