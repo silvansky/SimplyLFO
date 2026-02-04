@@ -14,7 +14,7 @@ struct LFORowView: View {
             }
             .frame(width: 70)
 
-            // Rate & Depth sliders stacked
+            // Rate, Depth & Offset sliders stacked
             VStack(spacing: 4) {
                 HStack {
                     Text("Rate")
@@ -31,6 +31,15 @@ struct LFORowView: View {
                         .frame(width: 35, alignment: .leading)
                     Slider(value: $lfo.depth, in: 0.0...1.0)
                     Text("\(Int(lfo.depth * 100))%")
+                        .font(.caption)
+                        .frame(width: 30)
+                }
+                HStack {
+                    Text("Offset")
+                        .font(.caption)
+                        .frame(width: 35, alignment: .leading)
+                    Slider(value: $lfo.offset, in: 0.0...1.0)
+                    Text("\(Int(lfo.offset * 127))")
                         .font(.caption)
                         .frame(width: 30)
                 }
@@ -53,7 +62,7 @@ struct LFORowView: View {
                         .frame(width: 60, height: 20)
                     RoundedRectangle(cornerRadius: 4)
                         .fill(lfo.isRunning ? Color.green : Color.blue)
-                        .frame(width: CGFloat((lfo.ccValue + 1) * 30), height: 20)
+                        .frame(width: CGFloat(Double(lfo.midiValue) / 127.0 * 60), height: 20)
                 }
             }
 
