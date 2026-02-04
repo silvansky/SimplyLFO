@@ -3,36 +3,31 @@ import AppKit
 
 class WaveformNSView: NSView {
     weak var lfoInstance: LFOInstance?
-    private var displayLink: CVDisplayLink?
+    private var displayLink: CADisplayLink?
 
     override init(frame: NSRect) {
         super.init(frame: frame)
         wantsLayer = true
         layer?.backgroundColor = NSColor.black.cgColor
-        setupDisplayLink()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) not implemented")
     }
 
-    private func setupDisplayLink() {
-        CVDisplayLinkCreateWithActiveCGDisplays(&displayLink)
-        guard let displayLink = displayLink else { return }
-
-        CVDisplayLinkSetOutputCallback(displayLink, { _, _, _, _, _, userInfo -> CVReturn in
-            let view = Unmanaged<WaveformNSView>.fromOpaque(userInfo!).takeUnretainedValue()
-            DispatchQueue.main.async { view.needsDisplay = true }
-            return kCVReturnSuccess
-        }, Unmanaged.passUnretained(self).toOpaque())
-
-        CVDisplayLinkStart(displayLink)
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        if window != nil {
+            displayLink = displayLink(target: self, selector: #selector(refresh))
+            displayLink?.add(to: .main, forMode: .common)
+        } else {
+            displayLink?.invalidate()
+            displayLink = nil
+        }
     }
 
-    deinit {
-        if let displayLink = displayLink {
-            CVDisplayLinkStop(displayLink)
-        }
+    @objc private func refresh(_ link: CADisplayLink) {
+        needsDisplay = true
     }
 
     override func draw(_ dirtyRect: NSRect) {

@@ -19,7 +19,7 @@ struct ContentView: View {
                     }
                 }
                 .frame(width: 200)
-                .onChange(of: viewModel.midiManager.selectedDestination) { newValue in
+                .onChange(of: viewModel.midiManager.selectedDestination) { _, newValue in
                     viewModel.midiManager.connect(to: newValue)
                 }
 
